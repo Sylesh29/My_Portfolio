@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sylesh Kona — Backend Engineer · Distributed Systems</title>
+<meta name="description" content="Venkata Sylesh Kona — Backend Engineer specializing in Go & Python for distributed systems. MS CS @ SUNY Albany, ex-Rivian." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07080c;
+    --bg-2:#0c0e14;
+    --ink:#e7e9ef;
+    --muted:#7a7f8d;
+    --line:rgba(255,255,255,0.08);
+    --line-2:rgba(255,255,255,0.14);
+    --cyan:#5eead4;
+    --cyan-2:#22d3ee;
+    --amber:#ffb86b;
+    --magenta:#ff7eb6;
+    --green:#86efac;
+    --red:#ff7a7a;
+    --serif:"Instrument Serif", "Times New Roman", serif;
+    --sans:"Inter", system-ui, -apple-system, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, "SF Mono", monospace;
+    --r:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);overflow-x:hidden}
+  body{cursor:none;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--cyan);color:#000}
+
+  /* ========== CUSTOM CURSOR ========== */
+  .cursor{
+    position:fixed;top:0;left:0;width:10px;height:10px;border-radius:50%;
+    background:var(--cyan);pointer-events:none;z-index:9999;
+    transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .25s,height .25s;
+  }
+  .cursor.lg{width:50px;height:50px;background:rgba(94,234,212,0.4)}
+  .cursor-ring{
+    position:fixed;top:0;left:0;width:36px;height:36px;border:1px solid var(--cyan);
+    border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);
+    transition:transform .15s ease-out, opacity .2s, width .25s, height .25s;
+  }
+  @media(hover:none){.cursor,.cursor-ring{display:none}body{cursor:auto}}
+
+  /* ========== NOISE OVERLAY ========== */
+  .noise{
+    position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.035;
+    background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ========== BOOT OVERLAY ========== */
+  #boot{
+    position:fixed;inset:0;z-index:10000;background:#000;color:var(--cyan);
+    font-family:var(--mono);display:flex;align-items:center;justify-content:center;flex-direction:column;
+    transition:opacity .8s ease, visibility .8s;
+  }
+  #boot.done{opacity:0;visibility:hidden;pointer-events:none}
+  #boot .lines{font-size:13px;line-height:1.9;width:min(560px,90vw);text-align:left;padding:24px;border:1px solid rgba(94,234,212,.25);border-radius:8px;background:rgba(94,234,212,.02)}
+  #boot .lines b{color:var(--amber);font-weight:500}
+  #boot .lines .dim{color:#4a8b80}
+  #boot .bar{margin-top:14px;height:2px;background:rgba(94,234,212,.15);overflow:hidden;border-radius:2px}
+  #boot .bar i{display:block;height:100%;width:0;background:var(--cyan);animation:fill 1.6s ease forwards}
+  @keyframes fill{to{width:100%}}
+
+  /* ========== NAV ========== */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 32px;
+    display:flex;justify-content:space-between;align-items:center;
+    background:linear-gradient(to bottom, rgba(7,8,12,0.85), rgba(7,8,12,0));
+    backdrop-filter:blur(8px);
+  }
+  nav .brand{font-family:var(--mono);font-size:13px;letter-spacing:.04em;color:var(--ink);display:flex;align-items:center;gap:10px}
+  nav .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  nav ul{list-style:none;display:flex;gap:6px;align-items:center}
+  nav ul li a{font-family:var(--mono);font-size:12px;color:var(--muted);padding:8px 14px;border-radius:999px;transition:.2s;letter-spacing:.04em}
+  nav ul li a:hover{color:var(--ink);background:rgba(255,255,255,0.04)}
+  nav .cta{font-family:var(--mono);font-size:12px;padding:9px 16px;border:1px solid var(--line-2);border-radius:999px;color:var(--ink);transition:.2s}
+  nav .cta:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 24px rgba(94,234,212,.15)}
+  @media(max-width:780px){nav ul{display:none}nav{padding:14px 18px}}
+
+  /* ========== HERO ========== */
+  .hero{
+    position:relative;min-height:100vh;padding:140px 32px 80px;
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  #net{position:absolute;inset:0;z-index:0}
+  .hero-inner{position:relative;z-index:2;max-width:1320px;margin:0 auto;width:100%}
+  .hero-tag{
+    font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.18em;
+    text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:32px;opacity:0;
+    animation:fadeUp .8s ease .3s forwards;
+  }
+  .hero-tag::before{content:"";width:42px;height:1px;background:var(--cyan)}
+  h1.name{
+    font-family:var(--serif);font-weight:400;line-height:.92;letter-spacing:-.02em;
+    font-size:clamp(56px, 11vw, 168px);
+    margin-bottom:24px;
+  }
+  h1.name .word{display:inline-block;overflow:hidden;vertical-align:bottom}
+  h1.name .word span{display:inline-block;transform:translateY(110%);animation:rise 1s cubic-bezier(.2,.8,.2,1) forwards}
+  h1.name .word:nth-child(2) span{animation-delay:.12s}
+  h1.name em{font-style:italic;color:var(--cyan)}
+  @keyframes rise{to{transform:translateY(0)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  .hero-sub{
+    font-size:clamp(18px,2vw,24px);font-weight:300;color:#cbd0db;max-width:680px;margin-bottom:48px;
+    opacity:0;animation:fadeUp .8s ease .8s forwards;
+  }
+  .hero-sub b{color:var(--ink);font-weight:500}
+
+  .hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:end}
+  @media(max-width:980px){.hero-grid{grid-template-columns:1fr}}
+
+  .meta-rail{
+    display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;
+    opacity:0;animation:fadeUp .8s ease 1.1s forwards;
+  }
+  .chip{
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:#bdc4d3;
+    padding:7px 12px;border:1px solid var(--line-2);border-radius:999px;background:rgba(255,255,255,0.02);
+  }
+  .chip.glow{border-color:rgba(94,234,212,.4);color:var(--cyan)}
+
+  /* live metric panel */
+  .panel{
+    border:1px solid var(--line-2);border-radius:var(--r);background:rgba(255,255,255,0.015);
+    padding:22px;font-family:var(--mono);position:relative;overflow:hidden;
+    opacity:0;animation:fadeUp .8s ease 1.2s forwards;
+  }
+  .panel::before{
+    content:"";position:absolute;inset:0;background:linear-gradient(135deg, rgba(94,234,212,.06), transparent 40%);pointer-events:none;
+  }
+  .panel-head{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+  .panel-head .live{display:flex;align-items:center;gap:6px;color:var(--green)}
+  .panel-head .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite;box-shadow:0 0 8px var(--green)}
+  .metric-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .metric-row:last-child{border-bottom:none}
+  .metric-row .label{font-size:12px;color:#bdc4d3}
+  .metric-row .val{font-size:20px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+  .metric-row .delta{font-size:11px;margin-left:8px}
+  .delta.up{color:var(--green)}.delta.down{color:var(--cyan)}
+
+  .scroll-hint{
+    position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.2em;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .scroll-hint .line{width:1px;height:36px;background:linear-gradient(to bottom,var(--cyan),transparent);animation:dripDown 1.8s ease infinite}
+  @keyframes dripDown{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+  /* ========== SECTION CHROME ========== */
+  section.block{padding:140px 32px;position:relative;z-index:2}
+  .container{max-width:1320px;margin:0 auto}
+  .section-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-bottom:64px;flex-wrap:wrap;
+  }
+  .section-num{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase}
+  h2.title{
+    font-family:var(--serif);font-weight:400;font-size:clamp(40px,6vw,76px);line-height:1;letter-spacing:-.02em;margin-top:8px;
+  }
+  h2.title em{font-style:italic;color:var(--amber)}
+  .section-aside{font-family:var(--mono);font-size:12px;color:var(--muted);max-width:320px;line-height:1.7}
+
+  /* ========== ABOUT ========== */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+  @media(max-width:920px){.about-grid{grid-template-columns:1fr;gap:40px}}
+  .about-text p{font-size:18px;color:#c9cfdc;margin-bottom:18px;font-weight:300}
+  .about-text p b{color:var(--ink);font-weight:500}
+  .about-text p em{color:var(--cyan);font-style:normal;font-family:var(--mono);font-size:.95em}
+
+  /* code block aesthetic */
+  .codecard{
+    border:1px solid var(--line-2);border-radius:var(--r);background:#0a0c12;font-family:var(--mono);font-size:13px;overflow:hidden;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.6);
+  }
+  .codecard .bar{display:flex;align-items:center;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);background:#0d0f17}
+  .codecard .bar .d{width:10px;height:10px;border-radius:50%}
+  .codecard .bar .d:nth-child(1){background:#ff5f57}.codecard .bar .d:nth-child(2){background:#ffbd2e}.codecard .bar .d:nth-child(3){background:#28c840}
+  .codecard .bar .name{margin-left:auto;font-size:11px;color:var(--muted)}
+  .codecard pre{padding:18px 20px;line-height:1.7;color:#cdd6e3;overflow-x:auto}
+  .codecard .tk-k{color:var(--magenta)}.codecard .tk-s{color:var(--green)}.codecard .tk-n{color:var(--amber)}.codecard .tk-c{color:#5b6477;font-style:italic}.codecard .tk-f{color:var(--cyan-2)}.codecard .tk-p{color:#7d8aa3}
+
+  /* ========== PROJECTS ========== */
+  .proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+  @media(max-width:920px){.proj-grid{grid-template-columns:1fr}}
+  .proj{
+    position:relative;border-radius:var(--r);padding:32px;border:1px solid var(--line);background:linear-gradient(160deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    overflow:hidden;transform-style:preserve-3d;transition:border-color .3s, transform .15s;
+    min-height:340px;display:flex;flex-direction:column;
+  }
+  .proj::before{
+    content:"";position:absolute;inset:-1px;border-radius:var(--r);padding:1px;
+    background:conic-gradient(from var(--ang,0deg), transparent 0deg, var(--cyan) 80deg, transparent 160deg, var(--amber) 240deg, transparent 360deg);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    opacity:0;transition:opacity .4s;pointer-events:none;
+  }
+  .proj.feature::before{opacity:.25;animation:spin 8s linear infinite}
+  .proj:hover::before{opacity:.6;animation:spin 4s linear infinite}
+  @keyframes spin{to{--ang:360deg}}
+  @property --ang{syntax:'<angle>';initial-value:0deg;inherits:false;}
+
+  .proj-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .proj-meta .status{display:flex;align-items:center;gap:6px}
+  .proj-meta .status::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cyan)}
+  .proj-name{font-family:var(--serif);font-size:34px;line-height:1.05;margin-bottom:10px;letter-spacing:-.01em}
+  .proj-tagline{font-family:var(--mono);font-size:12px;color:var(--cyan);margin-bottom:18px;letter-spacing:.02em}
+  .proj-desc{font-size:15px;color:#bdc4d3;line-height:1.6;font-weight:300}
+  .proj-stats{display:flex;gap:24px;margin-top:auto;padding-top:24px;border-top:1px dashed var(--line);font-family:var(--mono);font-size:11px}
+  .proj-stats div{display:flex;flex-direction:column;gap:2px}
+  .proj-stats .k{color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-size:10px}
+  .proj-stats .v{color:var(--ink);font-size:14px;font-weight:500}
+  .proj-tech{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+  .proj-tech span{font-family:var(--mono);font-size:10.5px;color:#a8afbf;padding:4px 9px;background:rgba(255,255,255,0.04);border-radius:4px}
+
+  /* ========== SKILLS ========== */
+  .skill-mesh{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:920px){.skill-mesh{grid-template-columns:repeat(2,1fr)}}
+  .skill-cluster{
+    border:1px solid var(--line);border-radius:var(--r);padding:22px;background:rgba(255,255,255,0.012);
+    transition:border-color .3s, transform .3s;
+  }
+  .skill-cluster:hover{border-color:var(--line-2);transform:translateY(-3px)}
+  .skill-cluster h4{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+  .skill-cluster h4::before{content:"";width:6px;height:6px;background:var(--cyan);border-radius:1px;transform:rotate(45deg)}
+  .skill-list{display:flex;flex-direction:column;gap:8px}
+  .skill-list li{font-size:14px;color:#d6dae6;display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .skill-list li:last-child{border:none}
+  .skill-list li .lvl{font-family:var(--mono);font-size:10px;color:var(--muted)}
+
+  /* ========== EXPERIENCE TIMELINE ========== */
+  .timeline{position:relative;padding-left:40px}
+  .timeline::before{content:"";position:absolute;top:0;bottom:0;left:11px;width:1px;background:linear-gradient(to bottom, var(--cyan), transparent)}
+  .tl-item{position:relative;margin-bottom:48px}
+  .tl-item::before{
+    content:"";position:absolute;left:-34px;top:8px;width:14px;height:14px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 0 6px rgba(94,234,212,0.08);
+  }
+  .tl-when{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+  .tl-role{font-family:var(--serif);font-size:28px;line-height:1.15;margin-bottom:4px;letter-spacing:-.01em}
+  .tl-org{font-family:var(--mono);font-size:13px;color:var(--amber);margin-bottom:14px}
+  .tl-points{list-style:none;display:flex;flex-direction:column;gap:8px;color:#bdc4d3;font-size:14.5px;font-weight:300}
+  .tl-points li{padding-left:18px;position:relative;line-height:1.6}
+  .tl-points li::before{content:"›";position:absolute;left:0;top:0;color:var(--cyan);font-weight:600}
+
+  /* ========== CONTACT ========== */
+  .contact{
+    border:1px solid var(--line-2);border-radius:var(--r);padding:48px 40px;background:rgba(255,255,255,0.01);position:relative;overflow:hidden;
+  }
+  .contact::after{
+    content:"";position:absolute;inset:0;background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(94,234,212,0.08), transparent 40%);pointer-events:none;transition:.2s;
+  }
+  .term{font-family:var(--mono);font-size:14px;color:#a8afbf;background:#08090d;border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin-bottom:32px}
+  .term .prompt{color:var(--cyan)}
+  .term .reply{color:var(--green)}
+  .term .typing::after{content:"▍";color:var(--cyan);animation:blink 1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+  .contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  @media(max-width:760px){.contact-grid{grid-template-columns:1fr}}
+  .contact-link{
+    display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border:1px solid var(--line);border-radius:10px;
+    transition:.25s;font-family:var(--mono);font-size:13px;
+  }
+  .contact-link:hover{border-color:var(--cyan);background:rgba(94,234,212,0.04);transform:translateX(4px)}
+  .contact-link .k{color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-size:11px}
+  .contact-link .v{color:var(--ink);font-weight:500}
+  .contact-link .arr{color:var(--cyan);transition:transform .25s}
+  .contact-link:hover .arr{transform:translateX(4px)}
+
+  /* ========== FOOTER ========== */
+  footer{padding:48px 32px 32px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;max-width:1320px;margin:80px auto 0}
+
+  /* ========== REVEAL ========== */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s ease, transform .9s cubic-bezier(.2,.8,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* HERO BIG WORD MARQUEE */
+  .marquee{
+    overflow:hidden;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:18px 0;margin-top:64px;font-family:var(--serif);font-size:clamp(24px,5vw,64px);letter-spacing:-.01em;
+  }
+  .marquee .track{display:inline-block;animation:slide 36s linear infinite}
+  .marquee em{font-style:italic;color:var(--cyan)}
+  .marquee span.dot{display:inline-block;width:8px;height:8px;background:var(--amber);border-radius:50%;margin:0 24px;vertical-align:middle}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+</style>
+</head>
+<body>
+
+<!-- BOOT OVERLAY -->
+<div id="boot">
+  <div class="lines">
+    <div><span class="dim">$</span> ./bootstrap.sh <span class="dim">--target=portfolio</span></div>
+    <div><span class="dim">[ok]</span> initializing runtime <span class="dim">··········</span> <b>ok</b></div>
+    <div><span class="dim">[ok]</span> loading sylesh.kona <span class="dim">··········</span> <b>ok</b></div>
+    <div><span class="dim">[ok]</span> connecting nodes <span class="dim">··········</span> <b>3 / 3</b></div>
+    <div><span class="dim">[ok]</span> warming up cache <span class="dim">··········</span> <b>ok</b></div>
+    <div class="bar"><i></i></div>
+  </div>
+</div>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curRing"></div>
+<div class="noise"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#top" class="brand"><span class="dot"></span><span>sylesh.kona / v2026</span></a>
+  <ul>
+    <li><a href="#about">01 · About</a></li>
+    <li><a href="#work">02 · Work</a></li>
+    <li><a href="#stack">03 · Stack</a></li>
+    <li><a href="#timeline">04 · Timeline</a></li>
+  </ul>
+  <a href="#contact" class="cta">Let's talk →</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <canvas id="net"></canvas>
+  <div class="hero-inner">
+    <div class="hero-tag">Backend Engineer · Distributed Systems · MS CS, SUNY Albany</div>
+
+    <h1 class="name">
+      <span class="word"><span>Sylesh</span></span>
+      <span class="word"><span><em>Kona.</em></span></span>
+    </h1>
+
+    <div class="hero-grid">
+      <div>
+        <p class="hero-sub">
+          I build <b>high-throughput backend systems</b> in <b>Go</b> and <b>Python</b> — the kind that
+          move telemetry from <em>vehicles</em>, <em>vector stores</em>, and <em>distributed services</em> at scale.
+          Most recently at <b>Rivian</b>, just graduated with my MS from <b>SUNY Albany</b>.
+        </p>
+
+        <div class="meta-rail">
+          <span class="chip glow">● Available immediately</span>
+          <span class="chip">F-1 STEM OPT · 3 yrs work auth</span>
+          <span class="chip">No sponsorship needed</span>
+          <span class="chip">San Jose, CA → Remote-first</span>
+        </div>
+      </div>
+
+      <!-- live metric panel — nods to Rivian metrics -->
+      <div class="panel">
+        <div class="panel-head">
+          <span>vmcap.telemetry.live</span>
+          <span class="live">streaming</span>
+        </div>
+        <div class="metric-row">
+          <span class="label">throughput</span>
+          <span><span class="val" id="m1">2,847</span><span class="delta up" id="d1">+30%</span></span>
+        </div>
+        <div class="metric-row">
+          <span class="label">p99 latency</span>
+          <span><span class="val" id="m2">38ms</span><span class="delta down" id="d2">−25%</span></span>
+        </div>
+        <div class="metric-row">
+          <span class="label">active services</span>
+          <span><span class="val" id="m3">12</span><span class="delta up">healthy</span></span>
+        </div>
+        <div class="metric-row">
+          <span class="label">test coverage</span>
+          <span><span class="val" id="m4">85%</span><span class="delta up">+50pp</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint"><span>SCROLL</span><span class="line"></span></div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    Go &nbsp; <em>Python</em> &nbsp; <span class="dot"></span> &nbsp; Distributed Systems &nbsp; <em>Microservices</em> &nbsp; <span class="dot"></span> &nbsp; AWS &nbsp; <em>Kubernetes</em> &nbsp; <span class="dot"></span> &nbsp; Vector Search &nbsp; <em>RAG</em> &nbsp; <span class="dot"></span> &nbsp; Go &nbsp; <em>Python</em> &nbsp; <span class="dot"></span> &nbsp; Distributed Systems &nbsp; <em>Microservices</em> &nbsp; <span class="dot"></span> &nbsp; AWS &nbsp; <em>Kubernetes</em> &nbsp; <span class="dot"></span> &nbsp; Vector Search &nbsp; <em>RAG</em> &nbsp; <span class="dot"></span> &nbsp;
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="block" id="about">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">— 01 / About</div>
+        <h2 class="title">Pipelines that <em>scale.</em><br/>Systems that <em>survive.</em></h2>
+      </div>
+      <p class="section-aside">I think in services, contracts, and concurrency primitives — and I write code that has to behave under pressure.</p>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I'm a <b>backend engineer</b> who just graduated with an MS in Computer Science from <b>SUNY Albany</b> (GPA <em>3.75</em>, May 2026). The summer before that was spent at <b>Rivian Automotive</b>'s Data Applications & ML team in Palo Alto, where I built Go microservices for vehicle telemetry pipelines, automated CI/CD documentation, and provisioned services with <em>Terraform</em>.</p>
+
+        <p>The work I love sits at the seam of systems and data — RESTful APIs that need to be <em>boring and reliable</em>, vector stores that need to be <em>fast and right</em>, and observability that turns 3am pages into solved tickets.</p>
+
+        <p>Outside of work I built <b>OpsPilot</b>, an enterprise AI incident-triage agent with <em>FastAPI</em>, <em>Astra DB</em> vector search, and <em>MCP</em> tools — and a blockchain supply-chain system covering <em>120+ distribution points</em>.</p>
+      </div>
+
+      <div class="codecard reveal">
+        <div class="bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="name">about.go</span></div>
+<pre><span class="tk-c">// who I am, in 14 lines</span>
+<span class="tk-k">package</span> <span class="tk-f">sylesh</span>
+
+<span class="tk-k">type</span> <span class="tk-f">Engineer</span> <span class="tk-k">struct</span> {
+    <span class="tk-p">Name</span>    <span class="tk-f">string</span>
+    <span class="tk-p">Stack</span>   []<span class="tk-f">string</span>
+    <span class="tk-p">Loves</span>   []<span class="tk-f">string</span>
+}
+
+<span class="tk-k">var</span> <span class="tk-p">Sylesh</span> = <span class="tk-f">Engineer</span>{
+    <span class="tk-p">Name</span>:  <span class="tk-s">"Venkata Sylesh Kona"</span>,
+    <span class="tk-p">Stack</span>: []<span class="tk-f">string</span>{<span class="tk-s">"Go"</span>, <span class="tk-s">"Python"</span>, <span class="tk-s">"k8s"</span>, <span class="tk-s">"AWS"</span>},
+    <span class="tk-p">Loves</span>: []<span class="tk-f">string</span>{<span class="tk-s">"clean APIs"</span>, <span class="tk-s">"low latency"</span>,
+              <span class="tk-s">"good observability"</span>},
+}
+
+<span class="tk-k">func</span> (e *<span class="tk-f">Engineer</span>) <span class="tk-f">Status</span>() <span class="tk-f">string</span> {
+    <span class="tk-k">return</span> <span class="tk-s">"shipping &amp; learning"</span> <span class="tk-c">// always</span>
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="block" id="work">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">— 02 / Selected Work</div>
+        <h2 class="title">Three services<br/>I'm <em>proud of.</em></h2>
+      </div>
+      <p class="section-aside">Each project is a system, not a screenshot. Below: the architecture, the metrics, and what I learned shipping it.</p>
+    </div>
+
+    <div class="proj-grid">
+      <article class="proj feature reveal" data-tilt>
+        <div class="proj-meta"><span>Service · #001</span><span class="status">prod-ready</span></div>
+        <h3 class="proj-name">OpsPilot</h3>
+        <div class="proj-tagline">// enterprise AI incident-triage agent</div>
+        <p class="proj-desc">Embeds engineer-reported incidents, performs vector search over a <b>1536-dim cosine similarity</b> collection in Astra DB to retrieve runbooks, and routes context to a Langflow agent equipped with MCP tools for live Cassandra read/write. Deterministic JSON output via system prompt constraints; deployed via Docker Compose with Nginx, TLS, rate limiting, and OpenAI fallback.</p>
+        <div class="proj-tech">
+          <span>FastAPI</span><span>Astra DB</span><span>Langflow</span><span>OpenAI</span><span>MCP</span><span>Docker Compose</span><span>Nginx</span>
+        </div>
+        <div class="proj-stats">
+          <div><span class="k">Vector dim</span><span class="v">1536</span></div>
+          <div><span class="k">Chunk size</span><span class="v">1000ch</span></div>
+          <div><span class="k">Stack</span><span class="v">RAG + MCP</span></div>
+        </div>
+      </article>
+
+      <article class="proj feature reveal" data-tilt>
+        <div class="proj-meta"><span>Service · #002</span><span class="status">deployed</span></div>
+        <h3 class="proj-name">VMCAP Pipelines</h3>
+        <div class="proj-tagline">// vehicle telemetry @ Rivian</div>
+        <p class="proj-desc">High-throughput backend microservices in Go for vehicle telemetry data pipelines. Improved data throughput by <b>30%</b> and reduced end-to-end processing latency by <b>25%</b> through optimized concurrency patterns. Maintained REST APIs supporting secure inter-service communication across <b>4 departments</b>. Authored <b>25+ Cypress UI tests</b> for Polaris UI, raising coverage from <b>35% → 85%</b> in two sprints.</p>
+        <div class="proj-tech">
+          <span>Go</span><span>Python</span><span>PostgreSQL</span><span>MongoDB</span><span>Cypress</span><span>Terraform</span><span>Simdash</span>
+        </div>
+        <div class="proj-stats">
+          <div><span class="k">Throughput</span><span class="v">+30%</span></div>
+          <div><span class="k">Latency</span><span class="v">−25%</span></div>
+          <div><span class="k">Coverage</span><span class="v">35→85%</span></div>
+        </div>
+      </article>
+
+      <article class="proj reveal" data-tilt>
+        <div class="proj-meta"><span>Service · #003</span><span class="status">on-chain</span></div>
+        <h3 class="proj-name">Seed Supply Chain</h3>
+        <div class="proj-tagline">// blockchain provenance system</div>
+        <p class="proj-desc">Solidity + Rust seed-distribution smart-contract system reducing supply-chain fraud by <b>40%</b> and improving transparency by <b>50%</b>. Deployed across <b>3 states</b> and <b>120+ distribution points</b> via QR-linked on-chain validation.</p>
+        <div class="proj-tech"><span>Solidity</span><span>Rust</span><span>Smart Contracts</span><span>QR / dApp</span></div>
+        <div class="proj-stats">
+          <div><span class="k">Fraud ↓</span><span class="v">40%</span></div>
+          <div><span class="k">Reach</span><span class="v">120+ pts</span></div>
+        </div>
+      </article>
+
+      <article class="proj reveal" data-tilt>
+        <div class="proj-meta"><span>Service · #004</span><span class="status">99.9% SLA</span></div>
+        <h3 class="proj-name">E-Commerce Platform</h3>
+        <div class="proj-tagline">// scalable web store, k8s-native</div>
+        <p class="proj-desc">React + Node.js storefront for <b>1,000+ SKUs</b> with JWT auth and AWS-based payments. Deployed via Docker and Kubernetes with CI/CD pipelines maintaining <b>99.9% uptime</b> over 3 months.</p>
+        <div class="proj-tech"><span>React</span><span>Node.js</span><span>AWS</span><span>Docker</span><span>Kubernetes</span><span>JWT</span></div>
+        <div class="proj-stats">
+          <div><span class="k">Uptime</span><span class="v">99.9%</span></div>
+          <div><span class="k">SKUs</span><span class="v">1k+</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="block" id="stack">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">— 03 / Stack</div>
+        <h2 class="title">My <em>service mesh.</em></h2>
+      </div>
+      <p class="section-aside">A working snapshot of what I reach for first. Languages on the left, ops on the right, AI in between.</p>
+    </div>
+
+    <div class="skill-mesh">
+      <div class="skill-cluster reveal">
+        <h4>Languages</h4>
+        <ul class="skill-list">
+          <li><span>Go</span><span class="lvl">primary</span></li>
+          <li><span>Python</span><span class="lvl">primary</span></li>
+          <li><span>TypeScript</span><span class="lvl">fluent</span></li>
+          <li><span>Rust</span><span class="lvl">working</span></li>
+          <li><span>C++ / Solidity</span><span class="lvl">working</span></li>
+        </ul>
+      </div>
+      <div class="skill-cluster reveal">
+        <h4>Cloud / DevOps</h4>
+        <ul class="skill-list">
+          <li><span>AWS (Lambda, S3, EC2)</span><span class="lvl">★★★★</span></li>
+          <li><span>Docker</span><span class="lvl">★★★★★</span></li>
+          <li><span>Kubernetes</span><span class="lvl">★★★★</span></li>
+          <li><span>Terraform</span><span class="lvl">★★★</span></li>
+          <li><span>CI/CD · Git</span><span class="lvl">★★★★★</span></li>
+        </ul>
+      </div>
+      <div class="skill-cluster reveal">
+        <h4>Data Layer</h4>
+        <ul class="skill-list">
+          <li><span>PostgreSQL</span><span class="lvl">★★★★</span></li>
+          <li><span>MongoDB</span><span class="lvl">★★★★</span></li>
+          <li><span>Astra DB / Cassandra</span><span class="lvl">★★★</span></li>
+          <li><span>Redis</span><span class="lvl">★★★</span></li>
+          <li><span>MySQL</span><span class="lvl">★★★</span></li>
+        </ul>
+      </div>
+      <div class="skill-cluster reveal">
+        <h4>AI / Frameworks</h4>
+        <ul class="skill-list">
+          <li><span>FastAPI · Express</span><span class="lvl">★★★★</span></li>
+          <li><span>RAG · Embeddings</span><span class="lvl">★★★★</span></li>
+          <li><span>OpenAI API</span><span class="lvl">★★★★</span></li>
+          <li><span>MCP · Langflow</span><span class="lvl">★★★★</span></li>
+          <li><span>gRPC · Swagger</span><span class="lvl">★★★</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="block" id="timeline">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">— 04 / Timeline</div>
+        <h2 class="title">Where I've <em>shipped.</em></h2>
+      </div>
+      <p class="section-aside">Five years of building things that other people had to depend on.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-when">2026 · Jan – May</div>
+        <h3 class="tl-role">Graduate Teaching Assistant</h3>
+        <div class="tl-org">University at Albany, SUNY</div>
+        <ul class="tl-points">
+          <li>CSI 409 — Formal Methods and Models · CSI 416/516 — Computer Communication Networks</li>
+          <li>Graded 50+ undergrad/grad students; gave feedback on algorithmic modeling, verification, networking.</li>
+          <li>Maintained grading consistency across multiple sections in collaboration with faculty.</li>
+        </ul>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-when">2025 · May – Aug · Palo Alto, CA</div>
+        <h3 class="tl-role">Software Engineering Intern · Data Applications & ML</h3>
+        <div class="tl-org">Rivian Automotive</div>
+        <ul class="tl-points">
+          <li>Engineered Go microservices for VMCAP vehicle telemetry pipelines: <b>+30%</b> throughput, <b>−25%</b> latency.</li>
+          <li>Built REST APIs in Go and Python supporting inter-service communication across 4 departments.</li>
+          <li>Authored 25+ Cypress UI tests for Polaris UI, raising coverage from <b>35% → 85%</b> in 2 sprints.</li>
+          <li>Automated Swagger doc generation via CI/CD — <b>−70%</b> maintenance, <b>+40%</b> onboarding speed.</li>
+          <li>Provisioned 3+ services with Simdash + Terraform, cutting deploy setup time by <b>50%</b>.</li>
+        </ul>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-when">2024 · Aug – 2026 · May · Albany, NY</div>
+        <h3 class="tl-role">M.S. Computer Science · GPA 3.75 · Graduated</h3>
+        <div class="tl-org">University at Albany, SUNY</div>
+        <ul class="tl-points">
+          <li>Coursework: Distributed Systems, Machine Learning, Cloud Computing, Blockchain, Software Engineering, Algorithms.</li>
+        </ul>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-when">2023 · Jun – Aug · India</div>
+        <h3 class="tl-role">Research Intern</h3>
+        <div class="tl-org">GITAM Deemed University</div>
+        <ul class="tl-points">
+          <li>Designed an experimental protocol for N-dimensional smart contracts in Blockchain 5.0.</li>
+          <li>Co-authored statistical analyses contributing to research on next-gen blockchain applications.</li>
+        </ul>
+      </div>
+
+      <div class="tl-item reveal">
+        <div class="tl-when">2023 · May – Jul · India</div>
+        <h3 class="tl-role">Software Development Intern</h3>
+        <div class="tl-org">Frux Software Solutions</div>
+        <ul class="tl-points">
+          <li>Built a Node.js + React pharmacy tracking platform — <b>−40%</b> manual handling time.</li>
+          <li>Containerized with Docker, deployed to AWS EC2 at <b>99%</b> availability; modeled data in MongoDB.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="block" id="contact">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num">— 05 / Contact</div>
+        <h2 class="title">Open to <em>backend</em> &amp;<br/><em>platform</em> roles.</h2>
+      </div>
+      <p class="section-aside">Reach me on any channel below — I reply quickly and ship even quicker.</p>
+    </div>
+
+    <div class="contact reveal" id="contactCard">
+      <div class="term">
+        <div><span class="prompt">sylesh@portfolio</span> ~ % availability --check</div>
+        <div class="reply">› full-time · backend / platform / ML-infra · available now</div>
+        <div class="reply">› preference: Go or Python at scale · remote-first OK</div>
+        <div class="reply">› visa: F-1 STEM OPT (3 yrs) — no sponsorship needed</div>
+        <div><span class="prompt">sylesh@portfolio</span> ~ % <span class="typing">say hi</span></div>
+      </div>
+
+      <div class="contact-grid">
+        <a class="contact-link" href="mailto:konavenkatasylesh@gmail.com">
+          <span><span class="k">email</span><br/><span class="v">konavenkatasylesh@gmail.com</span></span>
+          <span class="arr">→</span>
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/sylesh-kona" target="_blank" rel="noopener">
+          <span><span class="k">linkedin</span><br/><span class="v">/in/sylesh-kona</span></span>
+          <span class="arr">→</span>
+        </a>
+        <a class="contact-link" href="https://github.com/sylesh29" target="_blank" rel="noopener">
+          <span><span class="k">github</span><br/><span class="v">/sylesh29</span></span>
+          <span class="arr">→</span>
+        </a>
+        <a class="contact-link" href="tel:+15189779740">
+          <span><span class="k">phone</span><br/><span class="v">+1 (518) 977-9740</span></span>
+          <span class="arr">→</span>
+        </a>
+      </div>
+    </div>
+
+    <footer>
+      <span>© 2026 Venkata Sylesh Kona · built with caffeine, curiosity &amp; Go.</span>
+      <span>v2026.04 · last deploy: just now</span>
+    </footer>
+  </div>
+</section>
+
+<script>
+/* ============ BOOT ============ */
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('boot').classList.add('done'), 1700);
+});
+
+/* ============ CUSTOM CURSOR ============ */
+(function(){
+  const c = document.getElementById('cur');
+  const r = document.getElementById('curRing');
+  let mx=0, my=0, rx=0, ry=0;
+  window.addEventListener('mousemove', e => {
+    mx=e.clientX; my=e.clientY;
+    c.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;
+  });
+  function tick(){
+    rx += (mx-rx)*0.18; ry += (my-ry)*0.18;
+    r.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(tick);
+  }
+  tick();
+  document.querySelectorAll('a, button, .proj, .skill-cluster, [data-tilt]').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{c.classList.add('lg');r.style.opacity=0});
+    el.addEventListener('mouseleave',()=>{c.classList.remove('lg');r.style.opacity=1});
+  });
+})();
+
+/* ============ HERO NETWORK CANVAS ============ */
+(function(){
+  const cv = document.getElementById('net');
+  const ctx = cv.getContext('2d');
+  let w, h, dpr;
+  const NODES = 70;
+  let nodes = [];
+  let mouse = {x:-9999, y:-9999};
+
+  function size(){
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    w = cv.clientWidth = cv.parentElement.clientWidth;
+    h = cv.clientHeight = cv.parentElement.clientHeight;
+    cv.width = w*dpr; cv.height = h*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function init(){
+    size();
+    nodes = [];
+    for(let i=0;i<NODES;i++){
+      nodes.push({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        vx: (Math.random()-0.5)*0.18,
+        vy: (Math.random()-0.5)*0.18,
+        r: Math.random()*1.6+0.4,
+        flicker: Math.random()*Math.PI*2,
+      });
+    }
+  }
+  window.addEventListener('resize', init);
+  cv.addEventListener('mousemove', e=>{
+    const rect = cv.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  cv.addEventListener('mouseleave', ()=>{ mouse.x=-9999; mouse.y=-9999; });
+
+  function loop(){
+    ctx.clearRect(0,0,w,h);
+    // soft gradient backdrop
+    const grad = ctx.createRadialGradient(w*0.7, h*0.4, 50, w*0.7, h*0.4, Math.max(w,h));
+    grad.addColorStop(0,'rgba(94,234,212,0.05)');
+    grad.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,w,h);
+
+    // draw connections
+    for(let i=0;i<nodes.length;i++){
+      const a = nodes[i];
+      for(let j=i+1;j<nodes.length;j++){
+        const b = nodes[j];
+        const dx = a.x-b.x, dy = a.y-b.y;
+        const d2 = dx*dx+dy*dy;
+        if(d2<140*140){
+          const op = (1-Math.sqrt(d2)/140) * 0.35;
+          ctx.strokeStyle = `rgba(94,234,212,${op})`;
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y);
+          ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+      // mouse pull
+      const mdx = mouse.x-a.x, mdy = mouse.y-a.y;
+      const md2 = mdx*mdx+mdy*mdy;
+      if(md2<200*200){
+        const f = 1 - Math.sqrt(md2)/200;
+        a.vx += (mdx/Math.sqrt(md2+1))*f*0.05;
+        a.vy += (mdy/Math.sqrt(md2+1))*f*0.05;
+        ctx.strokeStyle = `rgba(255,184,107,${f*0.5})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(mouse.x, mouse.y);
+        ctx.lineTo(a.x, a.y);
+        ctx.stroke();
+      }
+    }
+
+    // draw nodes
+    nodes.forEach(n=>{
+      n.x += n.vx; n.y += n.vy;
+      // damping
+      n.vx *= 0.985; n.vy *= 0.985;
+      // wrap
+      if(n.x<0) n.x+=w; if(n.x>w) n.x-=w;
+      if(n.y<0) n.y+=h; if(n.y>h) n.y-=h;
+      n.flicker += 0.02;
+      const a = 0.55 + Math.sin(n.flicker)*0.25;
+      ctx.fillStyle = `rgba(94,234,212,${a})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    requestAnimationFrame(loop);
+  }
+  init();
+  loop();
+})();
+
+/* ============ ANIMATED METRICS ============ */
+(function(){
+  const m1 = document.getElementById('m1');
+  const m2 = document.getElementById('m2');
+  const m3 = document.getElementById('m3');
+  const m4 = document.getElementById('m4');
+  let throughput = 2400;
+  let latency = 38;
+  setInterval(()=>{
+    throughput += Math.round((Math.random()-0.4)*60);
+    if(throughput<2200) throughput=2200;
+    if(throughput>3200) throughput=3200;
+    m1.textContent = throughput.toLocaleString();
+    latency = 32 + Math.round(Math.random()*10);
+    m2.textContent = latency + 'ms';
+  }, 1400);
+})();
+
+/* ============ REVEAL ON SCROLL ============ */
+(function(){
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+
+/* ============ 3D TILT ON PROJECTS ============ */
+(function(){
+  document.querySelectorAll('[data-tilt]').forEach(card=>{
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      const rx = (py - 0.5) * -8;
+      const ry = (px - 0.5) * 10;
+      card.style.transform = `perspective(1100px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', ()=>{
+      card.style.transform = '';
+    });
+  });
+})();
+
+/* ============ CONTACT GLOW FOLLOW ============ */
+(function(){
+  const card = document.getElementById('contactCard');
+  if(!card) return;
+  card.addEventListener('mousemove', e=>{
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', (e.clientX-r.left)+'px');
+    card.style.setProperty('--my', (e.clientY-r.top)+'px');
+  });
+})();
+
+/* ============ SMOOTH SCROLL ============ */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    const id = a.getAttribute('href');
+    if(id.length>1){
+      const el = document.querySelector(id);
+      if(el){
+        e.preventDefault();
+        el.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>

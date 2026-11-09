@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sylesh Kona</title>
-<meta name="description" content="Venkata Sylesh Kona, software engineer building backend services and AI agents, and the systems that check they worked. Former Rivian intern. M.S. Computer Science, University at Albany.">
+<meta name="description" content="Venkata Sylesh Kona, software engineer building backend services and AI agents, and the systems that check they worked. Lead engineer at Auteur, former Rivian intern. M.S. Computer Science, University at Albany.">
 <meta property="og:title" content="Sylesh Kona, software engineer">
 <meta property="og:description" content="Backend services and AI agents in Python, Go and TypeScript, plus the evaluation that proves they worked.">
 <meta property="og:type" content="website">
@@ -178,10 +178,10 @@
 </div>
 
 <header>
-  <p class="status"><i aria-hidden="true"></i>Open to new grad software engineering roles, available now</p>
+  <p class="status"><i aria-hidden="true"></i>Open to full time software engineering roles</p>
   <h1>I build backend services and AI agents, <span class="quiet">and the checks that prove they worked.</span></h1>
   <div class="lede">
-    <p>Python, Go and TypeScript. Previously a software engineering intern on Rivian's Data Applications and ML team, building telemetry services and failure monitoring on AWS. M.S. in Computer Science from the University at Albany. Based in New York, NY.</p>
+    <p>Python, Go and TypeScript. Lead engineer at Auteur, a consumer fashion curation startup, where I am the sole engineer. Previously a software engineering intern on Rivian's Data Applications and ML team, building telemetry services and failure monitoring on AWS. M.S. in Computer Science from the University at Albany. Based in New York, NY.</p>
     <ul class="links">
       <li><a href="mailto:konavenkatasylesh@gmail.com">konavenkatasylesh@gmail.com</a></li>
       <li><a href="https://github.com/sylesh29" rel="noopener">GitHub</a></li>
@@ -196,6 +196,31 @@
 <section id="experience" aria-labelledby="h-experience">
   <h2 id="h-experience">Experience</h2>
   <div class="rows">
+
+    <article class="row">
+      <p class="when">Oct 2026 to now<br>New York, NY (remote)</p>
+      <div class="what">
+        <h3>Lead Engineer</h3>
+        <p class="org">Auteur (Virgo Rising, LLC), consumer fashion curation</p>
+        <ul class="points">
+          <li>Sole engineer on a platform that curates a catalog spanning many brands around each shopper's own style profile. Built it end to end in Next.js 16, React 19, TypeScript and Postgres: nine screens, an installable PWA, passwordless magic link auth and a nine table Drizzle schema.</li>
+          <li>Designed a deterministic styling engine that turns a stylist authored rules matrix into per garment outcomes, verified by 446 unit and property tests, with perceptual color matching in OKLab and OKLCH instead of hex comparison.</li>
+          <li>Built a ranking engine with seven weighted signals, a plain language reason on every result and a diversity pass: 15 ms median to filter 40,000 products, 61 ms to rank and diversify 6,000.</li>
+          <li>Shipped a Claude vision tagging pipeline constrained to a controlled vocabulary, with confidence gating, a holdout evaluation harness and a review queue that turns expert corrections into training data.</li>
+        </ul>
+        <p class="note"><b>Why the rules stay on the server.</b> The styling rules are the company's core IP, so a build gate scans every shipped JavaScript chunk and fails the build if any of them appear. Catalog ingestion across four affiliate networks runs as a scheduled harvest, so no page load touches an external service or a credential.</p>
+      </div>
+      <figure class="flow">
+        <figcaption>Recommendation path</figcaption>
+        <ol>
+          <li><b>Affiliate catalogs</b><span>four networks, harvested on a schedule</span></li>
+          <li><b>Claude vision tagging</b><span>controlled vocabulary, confidence gated</span></li>
+          <li class="key"><b>Deterministic styling rules</b><span>server only, checked at build time</span></li>
+          <li><b>Seven signal ranking</b><span>with a reason on every result</span></li>
+          <li><b>Diversity pass</b><span>a varied page, not ten of the same</span></li>
+        </ol>
+      </figure>
+    </article>
 
     <article class="row">
       <p class="when">May to Aug 2025<br>Palo Alto, CA</p>
@@ -280,6 +305,7 @@
         <p class="result">26 real calls across 23 scenarios produced 143 candidate findings, reduced to <mark>25 issues, 7 high severity</mark>, including accepting a mismatched date of birth.</p>
         <p class="note"><b>Why the quote check.</b> A finding only counts if its evidence matches the transcript word for word, so claims the model could not ground were dropped.</p>
         <p class="stack">Python, LiveKit Agents, Deepgram, OpenAI, Cartesia, SignalWire SIP</p>
+        <p class="proj-links"><a href="https://github.com/Sylesh29/patient-call-tester" rel="noopener">Code</a></p>
       </div>
       <figure class="flow">
         <figcaption>Call path</figcaption>
@@ -396,11 +422,11 @@
   <p class="core" aria-label="Core tools"><span>Python</span><span>Go</span><span>TypeScript</span><span>FastAPI</span><span>AWS</span></p>
   <dl class="skills">
     <dt>Languages</dt><dd>Python, Go, TypeScript, JavaScript, SQL</dd>
-    <dt>LLMs and agents</dt><dd>Claude, OpenAI and Groq APIs, tool calling, MCP, RAG and embeddings, structured outputs, evaluation and LLM as a judge, guardrails, LangChain, Langflow</dd>
-    <dt>Backend and frontend</dt><dd>REST APIs, FastAPI, Node.js, Express, React, Next.js, protobuf</dd>
-    <dt>Data</dt><dd>PostgreSQL, MongoDB, SQLite, Astra DB (Cassandra)</dd>
+    <dt>LLMs and agents</dt><dd>Claude, OpenAI and Groq APIs, Claude vision, tool calling, MCP, RAG and embeddings, structured outputs, evaluation and LLM as a judge, guardrails, LangChain, Langflow</dd>
+    <dt>Backend and frontend</dt><dd>REST APIs, FastAPI, Node.js, Express, React, Next.js, Tailwind CSS, PWAs, protobuf</dd>
+    <dt>Data</dt><dd>PostgreSQL, Drizzle ORM, MongoDB, SQLite, Astra DB (Cassandra)</dd>
     <dt>Voice AI</dt><dd>LiveKit Agents, Deepgram, Cartesia, SIP over SignalWire</dd>
-    <dt>Cloud and testing</dt><dd>AWS Lambda, SQS, EventBridge, Batch, S3, CloudWatch, Docker, Terraform, CI/CD, Linux, go test, Cypress, pytest</dd>
+    <dt>Cloud and testing</dt><dd>AWS Lambda, SQS, EventBridge, Batch, S3, CloudWatch, Docker, Terraform, CI/CD, Linux, go test, Vitest, Playwright, Cypress, pytest</dd>
   </dl>
 </section>
 

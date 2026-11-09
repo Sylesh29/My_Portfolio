@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sylesh Kona</title>
-<meta name="description" content="Venkata Sylesh Kona, software engineer building backend services and AI agents. Former Rivian software engineering intern. M.S. Computer Science, University at Albany.">
+<meta name="description" content="Venkata Sylesh Kona, software engineer building backend services and AI agents, and the systems that check they worked. Former Rivian intern. M.S. Computer Science, University at Albany.">
 <meta property="og:title" content="Sylesh Kona, software engineer">
-<meta property="og:description" content="Backend services and AI agents in Python, Go and TypeScript. Former Rivian intern. M.S. CS, University at Albany.">
+<meta property="og:description" content="Backend services and AI agents in Python, Go and TypeScript, plus the evaluation that proves they worked.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#EDF0EF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181B" media="(prefers-color-scheme: dark)">
@@ -15,13 +15,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&display=swap" rel="stylesheet">
 <style>
+  /* Layout: a ledger. Dates on the left rail, the work in the middle, the system path on the right. */
   :root{
     --bg:#EDF0EF;
+    --surface:#F7F9F8;
     --ink:#16191D;
     --muted:#5A646D;
     --rule:#CBD2D4;
     --accent:#1F6B55;
-    --accent-soft:rgba(31,107,85,.12);
+    --accent-soft:rgba(31,107,85,.11);
     --font:"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
     --measure:38rem;
     --gutter:clamp(16px, 5vw, 64px);
@@ -29,13 +31,13 @@
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#15181B; --ink:#E8ECEB; --muted:#98A2A9; --rule:#2E3438;
-      --accent:#74D1B2; --accent-soft:rgba(116,209,178,.14); color-scheme:dark;
+      --bg:#15181B; --surface:#1C2024; --ink:#E8ECEB; --muted:#98A2A9; --rule:#2F363A;
+      --accent:#74D1B2; --accent-soft:rgba(116,209,178,.13); color-scheme:dark;
     }
   }
   :root[data-theme="dark"]{
-    --bg:#15181B; --ink:#E8ECEB; --muted:#98A2A9; --rule:#2E3438;
-    --accent:#74D1B2; --accent-soft:rgba(116,209,178,.14); color-scheme:dark;
+    --bg:#15181B; --surface:#1C2024; --ink:#E8ECEB; --muted:#98A2A9; --rule:#2F363A;
+    --accent:#74D1B2; --accent-soft:rgba(116,209,178,.13); color-scheme:dark;
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
@@ -45,95 +47,143 @@
     font-size:1.0625rem;line-height:1.6;font-variation-settings:"opsz" 14;
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   }
-  a{color:inherit;text-decoration-color:var(--rule);text-decoration-thickness:1px;text-underline-offset:.22em;transition:text-decoration-color .15s, color .15s}
+  a{color:inherit;text-decoration-line:underline;text-decoration-color:var(--rule);text-decoration-thickness:1px;text-underline-offset:.22em;transition:text-decoration-color .15s, color .15s}
   a:hover{color:var(--accent);text-decoration-color:currentColor}
   a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
   ::selection{background:var(--accent-soft)}
+  h1,h2,h3{text-wrap:balance}
 
-  .page{max-width:72rem;margin:0 auto;padding-left:max(var(--gutter), env(safe-area-inset-left, 0px));padding-right:max(var(--gutter), env(safe-area-inset-right, 0px))}
+  .page{
+    max-width:76rem;margin:0 auto;
+    padding-left:max(var(--gutter), env(safe-area-inset-left, 0px));
+    padding-right:max(var(--gutter), env(safe-area-inset-right, 0px));
+  }
 
-  /* Hero: the one loud thing on the page */
-  header{padding:clamp(40px,9vh,96px) 0 clamp(56px,10vh,112px);border-bottom:1px solid var(--rule)}
-  .status{display:flex;align-items:center;gap:.6em;font-size:.95rem;color:var(--muted);margin-bottom:clamp(32px,8vh,88px)}
+  /* Top bar */
+  .bar{display:flex;justify-content:space-between;align-items:center;gap:1rem 2rem;flex-wrap:wrap;padding-block:24px}
+  .who{font-weight:620;font-variation-settings:"opsz" 24}
+  .bar nav{display:flex;gap:1.4rem;flex-wrap:wrap;font-size:.98rem}
+  .bar nav a{text-decoration-line:none;color:var(--muted)}
+  .bar nav a:hover{color:var(--accent)}
+
+  /* Hero: the thesis, set big and condensed */
+  header{padding-block:clamp(40px,10vh,120px) clamp(56px,10vh,112px);border-bottom:1px solid var(--rule)}
+  .status{display:inline-flex;align-items:center;gap:.6em;font-size:.95rem;color:var(--muted);margin-bottom:clamp(20px,4vh,36px)}
   .status i{width:.55em;height:.55em;border-radius:50%;background:var(--accent);flex:none}
   h1{
-    font-size:clamp(4rem, 17vw, 13.5rem);line-height:.84;letter-spacing:-.045em;
-    font-weight:780;font-variation-settings:"opsz" 96, "wdth" 75;
-    margin-left:-.04em;
+    font-size:clamp(2.6rem, 7.2vw, 6.4rem);line-height:.98;letter-spacing:-.035em;
+    font-weight:720;font-variation-settings:"opsz" 96, "wdth" 78;max-width:15ch;
   }
-  h1 span{display:block}
-  h1 span + span{color:var(--muted)}
-  .intro{
-    display:grid;grid-template-columns:minmax(0,var(--measure)) auto;gap:2rem 4rem;
-    align-items:end;margin-top:clamp(28px,5vh,56px);
+  h1 .quiet{color:var(--muted)}
+  .lede{
+    display:grid;grid-template-columns:minmax(0,var(--measure)) auto;gap:1.5rem 4rem;
+    align-items:end;margin-top:clamp(28px,5vh,52px);
   }
-  .intro p{font-size:clamp(1.2rem,2.1vw,1.5rem);line-height:1.45;font-weight:380;font-variation-settings:"opsz" 32;max-width:var(--measure)}
+  .lede p{font-size:clamp(1.12rem,1.8vw,1.32rem);line-height:1.5;font-weight:380;font-variation-settings:"opsz" 28}
   .links{list-style:none;display:flex;flex-direction:column;gap:.35rem;font-size:1.05rem;white-space:nowrap}
-  .links a{text-decoration-line:underline}
-  @media (max-width:760px){.intro{grid-template-columns:1fr}.links{flex-direction:row;flex-wrap:wrap;gap:.4rem 1.4rem}}
+  @media (max-width:760px){.lede{grid-template-columns:1fr}.links{flex-direction:row;flex-wrap:wrap;gap:.4rem 1.4rem}}
 
-  /* Ledger rows: when / what */
-  section{padding:clamp(56px,9vh,104px) 0;border-bottom:1px solid var(--rule)}
+  /* Sections and ledger rows */
+  section{padding-block:clamp(56px,9vh,104px);border-bottom:1px solid var(--rule)}
   h2{
-    font-size:clamp(1.6rem,3vw,2.1rem);line-height:1.1;font-weight:680;letter-spacing:-.02em;
-    font-variation-settings:"opsz" 48, "wdth" 85;margin-bottom:clamp(28px,5vh,48px);
+    font-size:clamp(1.7rem,3.2vw,2.3rem);line-height:1.1;font-weight:680;letter-spacing:-.02em;
+    font-variation-settings:"opsz" 48, "wdth" 85;
   }
-  .row{display:grid;grid-template-columns:12rem minmax(0,1fr);gap:.25rem 3rem;padding:1.6rem 0;border-top:1px solid var(--rule)}
-  .row:first-of-type{border-top:0;padding-top:0}
-  .when{color:var(--muted);font-size:.95rem;line-height:1.5;padding-top:.2rem;font-variant-numeric:tabular-nums}
-  .what{max-width:var(--measure)}
-  h3{font-size:1.3rem;line-height:1.3;font-weight:620;letter-spacing:-.01em;font-variation-settings:"opsz" 24}
-  .org{color:var(--muted);margin-bottom:.75rem}
-  .what > p{margin-top:.5rem}
-  ul.points{list-style:none;margin-top:.5rem}
+  .section-intro{color:var(--muted);max-width:var(--measure);margin-top:.6rem}
+  .rows{margin-top:clamp(28px,5vh,48px)}
+  .row{
+    display:grid;grid-template-columns:9.5rem minmax(0,1fr) minmax(15rem,19rem);
+    gap:1rem 3rem;padding-block:2rem;border-top:1px solid var(--rule);
+  }
+  .row:first-child{border-top:0;padding-top:0}
+  .row.plain{grid-template-columns:9.5rem minmax(0,1fr)}
+  .when{color:var(--muted);font-size:.95rem;line-height:1.5;padding-top:.25rem;font-variant-numeric:tabular-nums}
+  .what{max-width:var(--measure);min-width:0}
+  h3{font-size:1.4rem;line-height:1.25;font-weight:640;letter-spacing:-.012em;font-variation-settings:"opsz" 28}
+  .org{color:var(--muted)}
+  .what > p, .what > ul{margin-top:.7rem}
+  ul.points{list-style:none}
   ul.points li{position:relative;padding-left:1.15rem;margin-top:.55rem}
-  ul.points li::before{content:"";position:absolute;left:0;top:.72em;width:.45rem;height:1px;background:var(--muted)}
-  .stack{color:var(--muted);font-size:.95rem;margin-top:.75rem}
-  .finding{
-    margin-top:1rem;padding:.8rem 1rem;border-left:2px solid var(--accent);background:var(--accent-soft);
-    border-radius:0 6px 6px 0;font-size:1rem;
-  }
-  .proj-links{display:flex;gap:1.25rem;margin-top:.9rem;font-size:.98rem}
-  .proj-links a{text-decoration-line:underline}
-  @media (max-width:760px){.row{grid-template-columns:1fr}.when{padding-top:0}}
+  ul.points li::before{content:"";position:absolute;left:0;top:.75em;width:.45rem;height:1px;background:var(--muted)}
+  .note{color:var(--muted)}
+  .note b{color:var(--ink);font-weight:600}
+  .stack{color:var(--muted);font-size:.95rem}
+  .proj-links{display:flex;gap:1.25rem;font-size:.98rem}
+  .result{font-size:1.06rem;font-weight:500}
+  .result mark{background:linear-gradient(transparent 58%, var(--accent-soft) 58%);color:inherit;padding:0 .08em}
 
-  /* Skills: plain grouped lines, no bars or stars */
-  dl.skills{display:grid;grid-template-columns:12rem minmax(0,1fr);gap:1rem 3rem}
-  dl.skills dt{color:var(--muted);font-size:.95rem;padding-top:.15rem}
+  @media (max-width:1040px){
+    .row{grid-template-columns:9.5rem minmax(0,1fr)}
+    .row > figure{grid-column:2}
+  }
+  @media (max-width:700px){
+    .row, .row.plain{grid-template-columns:1fr;gap:.6rem}
+    .row > figure{grid-column:1;margin-top:.8rem}
+    .when{padding-top:0}
+  }
+
+  /* The signature element: each system drawn as its path, with the key decision marked */
+  figure.flow{min-width:0;align-self:start}
+  figure.flow figcaption{font-size:.88rem;color:var(--muted);margin-bottom:.7rem}
+  .flow ol{list-style:none;display:grid;gap:12px}
+  .flow li{
+    position:relative;padding:.6rem .85rem;border:1px solid var(--rule);border-radius:8px;background:var(--surface);
+    font-size:.93rem;line-height:1.35;
+  }
+  .flow li b{display:block;font-weight:600}
+  .flow li span{display:block;color:var(--muted);font-size:.86rem;margin-top:.1rem}
+  .flow li + li::before{content:"";position:absolute;left:1.35rem;top:-13px;width:1px;height:12px;background:var(--muted)}
+  .flow li + li::after{content:"";position:absolute;left:calc(1.35rem - 3px);top:-5px;border:3px solid transparent;border-top-color:var(--muted);border-bottom:0}
+  .flow li.key{border-color:var(--accent);background:var(--accent-soft)}
+  .flow li.key span{color:var(--ink)}
+  .flow .branch{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .flow .branch > div{padding:.5rem .7rem;border:1px dashed var(--rule);border-radius:8px;font-size:.86rem;color:var(--muted);line-height:1.3}
+
+  /* Skills: five core, the rest quiet */
+  .core{display:flex;flex-wrap:wrap;gap:.6rem 2rem;margin-top:clamp(24px,4vh,40px);font-size:clamp(1.4rem,2.6vw,1.9rem);font-weight:600;letter-spacing:-.015em;font-variation-settings:"opsz" 40, "wdth" 85}
+  dl.skills{display:grid;grid-template-columns:9.5rem minmax(0,1fr);gap:.8rem 3rem;margin-top:2rem}
+  dl.skills dt{color:var(--muted);font-size:.95rem;padding-top:.1rem}
   dl.skills dd{max-width:var(--measure)}
-  @media (max-width:760px){dl.skills{grid-template-columns:1fr;gap:.15rem}dl.skills dd{margin-bottom:1rem}}
+  @media (max-width:700px){dl.skills{grid-template-columns:1fr;gap:.1rem}dl.skills dd{margin-bottom:.9rem}}
 
   /* Contact */
   #contact{border-bottom:0}
   .contact-line{
-    font-size:clamp(1.6rem,4.4vw,3.2rem);line-height:1.15;font-weight:600;letter-spacing:-.025em;
+    margin-top:1.2rem;font-size:clamp(1.5rem,4.4vw,3.2rem);line-height:1.15;font-weight:600;letter-spacing:-.025em;
     font-variation-settings:"opsz" 72, "wdth" 85;overflow-wrap:anywhere;
   }
-  .contact-line a{text-decoration-line:underline;text-decoration-thickness:2px}
-  .contact-note{color:var(--muted);margin-top:1.25rem;max-width:var(--measure)}
-  footer{padding:0 0 40px;color:var(--muted);font-size:.9rem}
+  .contact-line a{text-decoration-thickness:2px}
+  footer{padding-block:0 40px;color:var(--muted);font-size:.9rem}
 
-  /* One orchestrated entrance, nothing else moves on its own */
+  /* One entrance on load; nothing else moves on its own */
   @media (prefers-reduced-motion: no-preference){
-    h1 span{animation:settle .9s cubic-bezier(.2,.7,.2,1) both}
-    h1 span + span{animation-delay:.08s}
-    .intro{animation:fade .7s ease .35s both}
-    @keyframes settle{from{opacity:0;letter-spacing:.02em}to{opacity:1;letter-spacing:-.045em}}
+    h1{animation:settle .9s cubic-bezier(.2,.7,.2,1) both}
+    .lede{animation:fade .7s ease .3s both}
+    @keyframes settle{from{opacity:0;transform:translateY(.12em)}to{opacity:1;transform:none}}
     @keyframes fade{from{opacity:0}to{opacity:1}}
   }
-  @media print{header{padding-top:0}.status i{display:none}a{text-decoration:none}}
+  @media print{.bar nav{display:none}a{text-decoration:none}figure.flow{break-inside:avoid}}
 </style>
 </head>
 <body>
 <div class="page">
 
+<div class="bar">
+  <span class="who">Venkata Sylesh Kona</span>
+  <nav aria-label="Sections">
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</div>
+
 <header>
   <p class="status"><i aria-hidden="true"></i>Open to new grad software engineering roles, available now</p>
-  <h1 aria-label="Sylesh Kona"><span>Sylesh</span><span>Kona</span></h1>
-  <div class="intro">
-    <p>I build backend services and AI agents in Python, Go and TypeScript, and I care most about proving they work. Previously a software engineering intern on Rivian's Data Applications and ML team. M.S. in Computer Science from the University at Albany.</p>
+  <h1>I build backend services and AI agents, <span class="quiet">and the checks that prove they worked.</span></h1>
+  <div class="lede">
+    <p>Python, Go and TypeScript. Previously a software engineering intern on Rivian's Data Applications and ML team, building telemetry services and failure monitoring on AWS. M.S. in Computer Science from the University at Albany.</p>
     <ul class="links">
-      <li><a href="mailto:konavenkatasylesh@gmail.com">Email</a></li>
+      <li><a href="mailto:konavenkatasylesh@gmail.com">konavenkatasylesh@gmail.com</a></li>
       <li><a href="https://github.com/sylesh29" rel="noopener">GitHub</a></li>
       <li><a href="https://linkedin.com/in/sylesh-kona" rel="noopener">LinkedIn</a></li>
     </ul>
@@ -144,123 +194,187 @@
 
 <section id="experience" aria-labelledby="h-experience">
   <h2 id="h-experience">Experience</h2>
+  <div class="rows">
 
-  <article class="row">
-    <p class="when">May to Aug 2025<br>Palo Alto, CA</p>
-    <div class="what">
-      <h3>Software Engineering Intern</h3>
-      <p class="org">Rivian Automotive, Data Applications and ML</p>
-      <ul class="points">
-        <li>Added update and delete to VMCAP, a Go microservice for vehicle telemetry metadata that only supported create and list. The update API is a PATCH with partial updates and protobuf validation; both ship with CLI commands, so ML teams stopped editing MongoDB records by hand.</li>
-        <li>Argued for soft delete over hard delete and got it adopted in dev and prod. Wrote around 20 tests for each of the service's four methods.</li>
-        <li>Built an event driven failure monitor for AWS Batch simulation jobs: EventBridge to SQS with a dead letter queue to Lambda, provisioned in Terraform. It maps failed array job children back to their scenarios, updates status in Simdash and posts to Slack, where failures used to be silent.</li>
-        <li>Built the Simdash build selector (CSET git hash, label or ECR image tag), automated Swagger docs in CI, and raised Cypress coverage on critical Polaris and Simdash flows from 35% to 85%.</li>
-      </ul>
-    </div>
-  </article>
+    <article class="row">
+      <p class="when">May to Aug 2025<br>Palo Alto, CA</p>
+      <div class="what">
+        <h3>Software Engineering Intern</h3>
+        <p class="org">Rivian Automotive, Data Applications and ML</p>
+        <ul class="points">
+          <li>Added update and delete to VMCAP, a Go microservice for vehicle telemetry metadata that only supported create and list. The update API is a PATCH with partial updates and protobuf validation, and both ship with CLI commands, so ML teams stopped editing MongoDB records by hand.</li>
+          <li>Built an event driven failure monitor for AWS Batch simulation jobs, provisioned in Terraform. Failures that used to be silent now update Simdash and post to Slack.</li>
+          <li>Built the Simdash build selector (CSET git hash, label or ECR image tag), automated Swagger docs in CI, and raised Cypress coverage on critical Polaris and Simdash flows from 35% to 85%.</li>
+        </ul>
+        <p class="note"><b>Why soft delete.</b> I argued for soft delete over hard delete so a mistaken call could be recovered, and it was adopted in dev and prod. Around 20 tests cover each of the service's four methods.</p>
+      </div>
+      <figure class="flow">
+        <figcaption>Failure path of the Batch monitor</figcaption>
+        <ol>
+          <li><b>AWS Batch</b><span>an array job child fails</span></li>
+          <li><b>EventBridge rule</b><span>matches the failed state change</span></li>
+          <li class="key"><b>SQS with dead letter queue</b><span>no failure event is lost if processing breaks</span></li>
+          <li><b>Lambda</b><span>maps the child index back to its scenario</span></li>
+          <li class="branch-host"><b>Notify</b>
+            <div class="branch" style="margin-top:.45rem"><div>Simdash status</div><div>Slack message</div></div>
+          </li>
+        </ol>
+      </figure>
+    </article>
 
-  <article class="row">
-    <p class="when">Jan to May 2026<br>Albany, NY</p>
-    <div class="what">
-      <h3>Graduate Teaching Assistant</h3>
-      <p class="org">University at Albany</p>
-      <p>Formal Methods and Models; Computer Communication Networks. Graded and gave feedback on modeling, verification and networking work across multiple sections.</p>
-    </div>
-  </article>
+    <article class="row plain">
+      <p class="when">Jan to May 2026<br>Albany, NY</p>
+      <div class="what">
+        <h3>Graduate Teaching Assistant</h3>
+        <p class="org">University at Albany</p>
+        <p>Formal Methods and Models; Computer Communication Networks. Graded and gave feedback on modeling, verification and networking work across multiple sections.</p>
+      </div>
+    </article>
 
-  <article class="row">
-    <p class="when">Summer 2023<br>India</p>
-    <div class="what">
-      <h3>Research Intern, then Software Development Intern</h3>
-      <p class="org">GITAM Deemed University; Frux Software Solutions</p>
-      <p>Designed an experimental protocol for N dimensional smart contracts and contributed statistical analysis to the research. At Frux, built a Node.js and React pharmacy tracking platform on MongoDB, containerized and deployed to AWS EC2.</p>
-    </div>
-  </article>
+    <article class="row plain">
+      <p class="when">Summer 2023<br>India</p>
+      <div class="what">
+        <h3>Research Intern, then Software Development Intern</h3>
+        <p class="org">GITAM Deemed University; Frux Software Solutions</p>
+        <p>Designed an experimental protocol for N dimensional smart contracts and contributed statistical analysis to the research. At Frux, built a Node.js and React pharmacy tracking platform on MongoDB, containerized and deployed to AWS EC2.</p>
+      </div>
+    </article>
+
+  </div>
 </section>
 
 <section id="projects" aria-labelledby="h-projects">
   <h2 id="h-projects">Projects</h2>
+  <p class="section-intro">Each one is drawn as the path its data takes. The highlighted step is the decision the project depends on.</p>
+  <div class="rows">
 
-  <article class="row">
-    <p class="when">Sept 2026</p>
-    <div class="what">
-      <h3>Voice Agent Eval</h3>
-      <p>An evaluation platform for a healthcare voice agent, built in a strict 8 hour timebox. Ground truth is simulated world state rather than the transcript, so it can catch the call that sounds perfect and changes nothing.</p>
-      <p class="finding">Comparing two agent versions, the headline metric moved about 2 points while recall on calls that must escalate fell 87. A deterministic quote check caught the LLM judge inventing a "verbatim" citation.</p>
-      <p class="stack">FastAPI, SQLite, Next.js, LLM as judge, 45 tests, 17 labeled scenarios</p>
-      <div class="proj-links"><a href="https://github.com/Sylesh29/voice-agent-eval" rel="noopener">Code</a></div>
-    </div>
-  </article>
+    <article class="row">
+      <p class="when">Sept 2026</p>
+      <div class="what">
+        <h3>Voice Agent Eval</h3>
+        <p>An evaluation platform for a healthcare voice agent, built in a strict 8 hour timebox. A transcript can sound perfect while nothing changed, so ground truth is the simulated world state, and the headline metric is false completion: the agent said it was done and the world says otherwise.</p>
+        <p class="result">Comparing two agent versions, the headline metric moved about 2 points while <mark>recall on calls that must escalate fell 87</mark>.</p>
+        <p class="note"><b>Why sliced reporting.</b> An aggregate hid the safety regression completely, so regressions are listed before averages by design. A deterministic quote check also caught the LLM judge inventing a citation it claimed was verbatim.</p>
+        <p class="stack">FastAPI, SQLite, Next.js, LLM as judge, 45 tests, 17 labeled scenarios</p>
+        <p class="proj-links"><a href="https://github.com/Sylesh29/voice-agent-eval" rel="noopener">Code and writeup</a></p>
+      </div>
+      <figure class="flow">
+        <figcaption>Evaluation path</figcaption>
+        <ol>
+          <li><b>17 labeled scenarios</b><span>refills, scheduling, must escalate cases</span></li>
+          <li><b>Agent v1 and v2</b><span>run against tools with injected faults</span></li>
+          <li class="key"><b>World state as ground truth</b><span>what actually changed, not what was said</span></li>
+          <li><b>Rule evaluators and LLM judge</b><span>judge quotes checked against the transcript</span></li>
+          <li><b>Sliced comparison</b><span>regressions first, averages second</span></li>
+        </ol>
+      </figure>
+    </article>
 
-  <article class="row">
-    <p class="when">Aug 2026</p>
-    <div class="what">
-      <h3>Fit Score</h3>
-      <p>A physician job match card that shows its own uncertainty. Unknown criteria are excluded rather than guessed, and every score carries a coverage figure and a floor to ceiling band.</p>
-      <p class="finding">A site scoring 94 with 43% coverage can be a worse job than one scoring 67 with full coverage. The band makes that visible before you read a number.</p>
-      <p class="stack">FastAPI, Next.js 15, Postgres, synthetic data, 43 written design decisions</p>
-      <div class="proj-links"><a href="https://fit-score-demo.vercel.app" rel="noopener">Live demo</a><a href="https://github.com/Sylesh29/fit-score" rel="noopener">Code</a></div>
-    </div>
-  </article>
+    <article class="row">
+      <p class="when">Aug 2026</p>
+      <div class="what">
+        <h3>Fit Score</h3>
+        <p>A physician job match card that shows its own uncertainty. When a criterion is unknown, guessing it misleads and scoring it as zero punishes small and rural sites for missing paperwork, so unknowns are excluded and shown as coverage and a floor to ceiling band.</p>
+        <p class="result">A site scoring 94 with 43% coverage <mark>can be a worse job than one scoring 67</mark> with full coverage, and the band shows it before you read a number.</p>
+        <p class="note"><b>Process.</b> Synthetic data only, with 43 written design decisions in the repo.</p>
+        <p class="stack">FastAPI, Next.js 15, Postgres</p>
+        <p class="proj-links"><a href="https://fit-score-demo.vercel.app" rel="noopener">Live demo</a><a href="https://github.com/Sylesh29/fit-score" rel="noopener">Code</a></p>
+      </div>
+      <figure class="flow">
+        <figcaption>Scoring path</figcaption>
+        <ol>
+          <li><b>Site criteria</b><span>call burden, PTO, and more</span></li>
+          <li><b>Split known from unknown</b><span>each fact labeled by its evidence</span></li>
+          <li class="key"><b>Score over known only</b><span>unknowns excluded, never guessed</span></li>
+          <li><b>Coverage and band</b><span>floor and ceiling if unknowns go either way</span></li>
+          <li><b>Match card</b><span>score, reasons, open questions</span></li>
+        </ol>
+      </figure>
+    </article>
 
-  <article class="row">
-    <p class="when">June 2026<br>NYC Tech Week</p>
-    <div class="what">
-      <h3>AuditGuard AI</h3>
-      <p>Data integrity triage for manufacturing records ahead of an inspection. Upload a production CSV; a four stage pipeline flags problems with explainable rules, ranks them by audit risk, proposes corrections without touching the original, and produces a report a compliance officer can sign.</p>
-      <p class="finding">Deterministic rules detect and decide; the LLM only explains, and its summary is rejected unless every number in it matches the findings.</p>
-      <p class="stack">FastAPI, Claude API, Groq, React, server sent events. Started as a solo hackathon build.</p>
-      <div class="proj-links"><a href="https://github.com/Sylesh29/AuditGuard-AI" rel="noopener">Code</a></div>
-    </div>
-  </article>
+    <article class="row">
+      <p class="when">June 2026<br>NYC Tech Week</p>
+      <div class="what">
+        <h3>AuditGuard AI</h3>
+        <p>Data integrity triage for manufacturing records ahead of an inspection. Upload a production CSV and a four stage pipeline flags problems with explainable rules, ranks them by audit risk, proposes corrections without touching the original, and produces a report a compliance officer can sign.</p>
+        <p class="note"><b>Why the LLM only explains.</b> In a regulated setting a flag has to give the same answer twice, so detection, ranking and every count are plain code. The LLM writes the summary, and it is rejected unless every finding and number in it matches.</p>
+        <p class="stack">FastAPI, Claude API or Groq, React, server sent events. Started as a solo hackathon build.</p>
+        <p class="proj-links"><a href="https://github.com/Sylesh29/AuditGuard-AI" rel="noopener">Code</a></p>
+      </div>
+      <figure class="flow">
+        <figcaption>Triage path</figcaption>
+        <ol>
+          <li><b>Production CSV</b><span>original kept untouched</span></li>
+          <li><b>Rules detect</b><span>fixed and explainable</span></li>
+          <li><b>Rank by audit risk</b><span>LLM may advise, never reorders</span></li>
+          <li><b>Proposed corrections</b><span>written to a copy</span></li>
+          <li class="key"><b>Summary checked against findings</b><span>template used if any number fails</span></li>
+        </ol>
+      </figure>
+    </article>
 
-  <article class="row">
-    <p class="when">Personal project</p>
-    <div class="what">
-      <h3>OpsPilot</h3>
-      <p>Incident triage agent that turns a plain English incident report into a structured, validated change plan. Retrieves runbook evidence by vector search in Astra DB, reasons through it with a Langflow agent using MCP tools, and persists tickets and session memory.</p>
-      <p class="stack">FastAPI, Astra DB, Langflow, MCP, Docker Compose, Nginx</p>
-      <div class="proj-links"><a href="https://github.com/Sylesh29/opspilot" rel="noopener">Code</a></div>
-    </div>
-  </article>
+    <article class="row">
+      <p class="when">Personal project</p>
+      <div class="what">
+        <h3>OpsPilot</h3>
+        <p>An incident triage agent that turns a plain English report such as "login returns 500 after deploy" into a structured change plan, backed by runbook evidence instead of guesswork.</p>
+        <p class="note"><b>Why a validated plan.</b> Free text is hard to act on under pressure, so the agent must return a change plan as JSON that passes validation, alongside a readable response.</p>
+        <p class="stack">FastAPI, Astra DB vector search, Langflow, MCP, Docker Compose, Nginx</p>
+        <p class="proj-links"><a href="https://github.com/Sylesh29/opspilot" rel="noopener">Code</a></p>
+      </div>
+      <figure class="flow">
+        <figcaption>Triage path</figcaption>
+        <ol>
+          <li><b>Incident report</b><span>plain English</span></li>
+          <li><b>Runbook retrieval</b><span>vector search in Astra DB</span></li>
+          <li><b>Langflow agent</b><span>reasons with MCP tools</span></li>
+          <li class="key"><b>Validated change plan</b><span>structured JSON, checked before return</span></li>
+          <li><b>Ticket and session memory</b><span>persisted for the incident's lifetime</span></li>
+        </ol>
+      </figure>
+    </article>
 
-  <article class="row">
-    <p class="when">2026<br>Boston Tech Week</p>
-    <div class="what">
-      <h3>VisionOps</h3>
-      <p>Three agent pipeline that turns freight claim documents into structured facts, built on NVIDIA Nemotron at the Phinite and GMI Cloud event.</p>
-    </div>
-  </article>
+    <article class="row plain">
+      <p class="when">2026<br>Boston Tech Week</p>
+      <div class="what">
+        <h3>VisionOps</h3>
+        <p>A three agent pipeline that turns freight claim documents into structured facts, built on NVIDIA Nemotron at the Phinite and GMI Cloud event.</p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="skills" aria-labelledby="h-skills">
+  <h2 id="h-skills">Tools</h2>
+  <p class="core" aria-label="Core tools"><span>Python</span><span>Go</span><span>TypeScript</span><span>FastAPI</span><span>AWS</span></p>
+  <dl class="skills">
+    <dt>Backend</dt><dd>Node.js, Express, Java and Spring Boot, REST, protobuf</dd>
+    <dt>AI</dt><dd>LLM evaluation, RAG and embeddings, MCP, Claude API, OpenAI API, Langflow</dd>
+    <dt>Infrastructure</dt><dd>Lambda, SQS, EventBridge, Batch, S3, EC2, Terraform, Docker, Kubernetes, CI/CD</dd>
+    <dt>Data</dt><dd>PostgreSQL, MongoDB, Cassandra and Astra DB, SQLite, Redis, SQL</dd>
+    <dt>Testing</dt><dd>go test, Cypress</dd>
+  </dl>
 </section>
 
 <section id="education" aria-labelledby="h-education">
   <h2 id="h-education">Education</h2>
-  <article class="row">
-    <p class="when">Aug 2024 to May 2026</p>
-    <div class="what">
-      <h3>M.S. Computer Science, GPA 3.77</h3>
-      <p class="org">University at Albany, State University of New York</p>
-      <p>Distributed Systems, Machine Learning, Cloud Computing, Blockchain, Software Engineering, Algorithms.</p>
-    </div>
-  </article>
-</section>
-
-<section id="skills" aria-labelledby="h-skills">
-  <h2 id="h-skills">Tools I use</h2>
-  <dl class="skills">
-    <dt>Languages</dt><dd>Python, Go, TypeScript, JavaScript, Java, SQL</dd>
-    <dt>Backend</dt><dd>FastAPI, Node.js, Express, Spring Boot, REST, protobuf</dd>
-    <dt>AI</dt><dd>LLM evaluation, RAG and embeddings, MCP, Claude API, OpenAI API, Langflow</dd>
-    <dt>Cloud and infra</dt><dd>AWS (Lambda, SQS, EventBridge, Batch, S3, EC2), Terraform, Docker, Kubernetes, CI/CD</dd>
-    <dt>Data</dt><dd>PostgreSQL, MongoDB, Cassandra and Astra DB, SQLite, Redis</dd>
-    <dt>Testing</dt><dd>go test, Cypress</dd>
-  </dl>
+  <div class="rows">
+    <article class="row plain">
+      <p class="when">Aug 2024 to May 2026</p>
+      <div class="what">
+        <h3>M.S. Computer Science, GPA 3.77</h3>
+        <p class="org">University at Albany, State University of New York</p>
+        <p>Distributed Systems, Machine Learning, Cloud Computing, Blockchain, Software Engineering, Algorithms.</p>
+      </div>
+    </article>
+  </div>
 </section>
 
 <section id="contact" aria-labelledby="h-contact">
   <h2 id="h-contact">Contact</h2>
   <p class="contact-line"><a href="mailto:konavenkatasylesh@gmail.com">konavenkatasylesh@gmail.com</a></p>
-  <p class="contact-note">Based in Albany, NY. Open to roles in San Francisco, New York, remote, or abroad. I usually reply within a day.</p>
+  <p class="section-intro">Based in Albany, NY. Open to roles in San Francisco, New York, remote, or abroad. I usually reply within a day.</p>
 </section>
 
 </main>

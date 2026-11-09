@@ -204,10 +204,11 @@
         <p class="org">Rivian Automotive, Data Applications and ML</p>
         <ul class="points">
           <li>Added update and delete to VMCAP, a Go microservice for vehicle telemetry metadata that only supported create and list. The update API is a PATCH with partial updates and protobuf validation, and both ship with CLI commands, so ML teams stopped editing MongoDB records by hand.</li>
-          <li>Built an event driven failure monitor for AWS Batch simulation jobs, provisioned in Terraform. Failures that used to be silent now update Simdash and post to Slack.</li>
-          <li>Built the Simdash build selector (CSET git hash, label or ECR image tag), automated Swagger docs in CI, and raised Cypress coverage on critical Polaris and Simdash flows from 35% to 85%.</li>
+          <li>Built an event driven failure monitor for AWS Batch simulation jobs, provisioned in Terraform. Failures that used to be silent across 25 to 30 scenario runs now update Simdash and post to Slack.</li>
+          <li>Fixed 5 production defects by tracing failures from the API layer through PostgreSQL and MongoDB, shipping each fix with a regression test alongside the owning engineers.</li>
+          <li>Raised test coverage on Polaris, an internal ML dashboard, from 35% to 85% in two sprints with 25+ Cypress tests. Automated Swagger docs in CI and provisioned 3 internal services with Terraform.</li>
         </ul>
-        <p class="note"><b>Why soft delete.</b> I argued for soft delete over hard delete so a mistaken call could be recovered, and it was adopted in dev and prod. Around 20 tests cover each of the service's four methods.</p>
+        <p class="note"><b>Why soft delete.</b> I argued for soft delete over hard delete so a mistaken call could be recovered, and it was adopted in dev and prod. About 80 go tests cover the service's four methods.</p>
       </div>
       <figure class="flow">
         <figcaption>Failure path of the Batch monitor</figcaption>
@@ -228,7 +229,7 @@
       <div class="what">
         <h3>Graduate Teaching Assistant</h3>
         <p class="org">University at Albany</p>
-        <p>Formal Methods and Models; Computer Communication Networks. Graded and gave feedback on modeling, verification and networking work across multiple sections.</p>
+        <p>Taught CSI 521 Discrete Mathematics and CSI 520 Cryptography to 100+ graduate students, designing assessments and running weekly office hours.</p>
       </div>
     </article>
 
@@ -254,8 +255,8 @@
       <div class="what">
         <h3>Voice Agent Eval</h3>
         <p>An evaluation platform for a healthcare voice agent, built in a strict 8 hour timebox. A transcript can sound perfect while nothing changed, so ground truth is the simulated world state, and the headline metric is false completion: the agent said it was done and the world says otherwise.</p>
-        <p class="result">Comparing two agent versions, the headline metric moved about 2 points while <mark>recall on calls that must escalate fell 87</mark>.</p>
-        <p class="note"><b>Why sliced reporting.</b> An aggregate hid the safety regression completely, so regressions are listed before averages by design. A deterministic quote check also caught the LLM judge inventing a citation it claimed was verbatim.</p>
+        <p class="result">Comparing two agent versions, headline metrics moved 1 to 3 points while <mark>recall on calls that must escalate fell 87</mark>.</p>
+        <p class="note"><b>Why sliced reporting.</b> An aggregate hid the safety regression completely, so regressions are listed before averages by design. Evaluator agreement with human labels went from a Cohen's kappa of −0.05 to 0.86, and a deterministic quote check caught the LLM judge inventing a citation it labeled verbatim.</p>
         <p class="stack">FastAPI, SQLite, Next.js, LLM as judge, 45 tests, 17 labeled scenarios</p>
         <p class="proj-links"><a href="https://github.com/Sylesh29/voice-agent-eval" rel="noopener">Code and writeup</a></p>
       </div>
@@ -267,6 +268,49 @@
           <li class="key"><b>World state as ground truth</b><span>what actually changed, not what was said</span></li>
           <li><b>Rule evaluators and LLM judge</b><span>judge quotes checked against the transcript</span></li>
           <li><b>Sliced comparison</b><span>regressions first, averages second</span></li>
+        </ol>
+      </figure>
+    </article>
+
+    <article class="row">
+      <p class="when">Oct 2026</p>
+      <div class="what">
+        <h3>Patient Voice Tester</h3>
+        <p>A voice bot that phones an AI medical receptionist and plays a realistic patient, recording both sides of every call and measuring per turn latency, overlaps and dead air.</p>
+        <p class="result">26 real calls across 23 scenarios produced 143 candidate findings, reduced to <mark>25 issues, 7 high severity</mark>, including accepting a mismatched date of birth.</p>
+        <p class="note"><b>Why the quote check.</b> A finding only counts if its evidence matches the transcript word for word, so claims the model could not ground were dropped.</p>
+        <p class="stack">Python, LiveKit Agents, Deepgram, OpenAI, Cartesia, SignalWire SIP</p>
+      </div>
+      <figure class="flow">
+        <figcaption>Call path</figcaption>
+        <ol>
+          <li><b>23 patient scenarios</b><span>refills, scheduling, identity checks</span></li>
+          <li><b>SIP call over SignalWire</b><span>a real phone call to the receptionist</span></li>
+          <li><b>LiveKit patient agent</b><span>Deepgram hears, OpenAI decides, Cartesia speaks</span></li>
+          <li><b>Both sides recorded</b><span>latency, overlaps and dead air per turn</span></li>
+          <li class="key"><b>Findings checked against transcript</b><span>ungrounded claims dropped</span></li>
+        </ol>
+      </figure>
+    </article>
+
+    <article class="row">
+      <p class="when">Sept 2026</p>
+      <div class="what">
+        <h3>ActionGuard</h3>
+        <p>A deterministic guardrail for a computer use agent operating a claims system. Fourteen rules sort every action into allow, escalate, abstain or block, stopping payments to excluded providers, leaks of patient data and duplicate replays.</p>
+        <p class="result">Against 26 indirect prompt injection attacks the detector caught 76.9%, yet <mark>100% were contained</mark> by verb level authority controls.</p>
+        <p class="note"><b>Why authority over detection.</b> Detection missed every adaptive semantic attack, so safety rests on what each verb is allowed to do, not on spotting the attack. Standard library only, 83 tests, tamper evident audit trace.</p>
+        <p class="stack">Python</p>
+        <p class="proj-links"><a href="https://github.com/Sylesh29/actionguard" rel="noopener">Code</a></p>
+      </div>
+      <figure class="flow">
+        <figcaption>Decision path</figcaption>
+        <ol>
+          <li><b>Agent proposes an action</b><span>a click, a payment, a data export</span></li>
+          <li><b>14 deterministic rules</b><span>no model in the loop</span></li>
+          <li class="key"><b>Allow, escalate, abstain or block</b><span>authority set by verb, not by content</span></li>
+          <li><b>Escalation to a named owner</b><span>a person decides the hard cases</span></li>
+          <li><b>Tamper evident audit trace</b><span>every decision recorded</span></li>
         </ol>
       </figure>
     </article>
@@ -298,6 +342,7 @@
       <div class="what">
         <h3>AuditGuard AI</h3>
         <p>Data integrity triage for manufacturing records ahead of an inspection. Upload a production CSV and a four stage pipeline flags problems with explainable rules, ranks them by audit risk, proposes corrections without touching the original, and produces a report a compliance officer can sign.</p>
+        <p class="result">Flagged <mark>850+ integrity issues in a 5,000 row</mark> manufacturing dataset, each corrected automatically or escalated to a person.</p>
         <p class="note"><b>Why the LLM only explains.</b> In a regulated setting a flag has to give the same answer twice, so detection, ranking and every count are plain code. The LLM writes the summary, and it is rejected unless every finding and number in it matches.</p>
         <p class="stack">FastAPI, Claude API or Groq, React, server sent events. Started as a solo hackathon build.</p>
         <p class="proj-links"><a href="https://github.com/Sylesh29/AuditGuard-AI" rel="noopener">Code</a></p>
@@ -350,11 +395,12 @@
   <h2 id="h-skills">Tools</h2>
   <p class="core" aria-label="Core tools"><span>Python</span><span>Go</span><span>TypeScript</span><span>FastAPI</span><span>AWS</span></p>
   <dl class="skills">
-    <dt>Backend</dt><dd>Node.js, Express, Java and Spring Boot, REST, protobuf</dd>
-    <dt>AI</dt><dd>LLM evaluation, RAG and embeddings, MCP, Claude API, OpenAI API, Langflow</dd>
-    <dt>Infrastructure</dt><dd>Lambda, SQS, EventBridge, Batch, S3, EC2, Terraform, Docker, Kubernetes, CI/CD</dd>
-    <dt>Data</dt><dd>PostgreSQL, MongoDB, Cassandra and Astra DB, SQLite, Redis, SQL</dd>
-    <dt>Testing</dt><dd>go test, Cypress</dd>
+    <dt>Languages</dt><dd>Python, Go, TypeScript, JavaScript, SQL</dd>
+    <dt>LLMs and agents</dt><dd>Claude, OpenAI and Groq APIs, tool calling, MCP, RAG and embeddings, structured outputs, evaluation and LLM as a judge, guardrails, LangChain, Langflow</dd>
+    <dt>Backend and frontend</dt><dd>REST APIs, FastAPI, Node.js, Express, React, Next.js, protobuf</dd>
+    <dt>Data</dt><dd>PostgreSQL, MongoDB, SQLite, Astra DB (Cassandra)</dd>
+    <dt>Voice AI</dt><dd>LiveKit Agents, Deepgram, Cartesia, SIP over SignalWire</dd>
+    <dt>Cloud and testing</dt><dd>AWS Lambda, SQS, EventBridge, Batch, S3, CloudWatch, Docker, Terraform, CI/CD, Linux, go test, Cypress, pytest</dd>
   </dl>
 </section>
 
